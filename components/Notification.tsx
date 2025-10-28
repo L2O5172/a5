@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { NotificationType } from '../types';
 
@@ -27,10 +26,14 @@ export const Notification: React.FC<NotificationProps> = ({ message, type, visib
     };
     
     return (
-        <div className={`fixed top-5 right-5 max-w-sm p-4 rounded-lg shadow-lg z-50 animate-slide-in ${typeClasses[type]}`}>
+        <div 
+            className={`fixed top-5 right-5 max-w-sm p-4 rounded-lg shadow-lg z-50 animate-slide-in ${typeClasses[type]}`}
+            role="alert"
+            aria-live="assertive"
+        >
             <div className="flex justify-between items-center">
                 <p className="text-sm font-medium whitespace-pre-wrap">{message}</p>
-                <button onClick={onClose} className="ml-4 text-xl font-bold leading-none">&times;</button>
+                <button onClick={onClose} className="ml-4 text-xl font-bold leading-none" aria-label="關閉通知">&times;</button>
             </div>
         </div>
     );
