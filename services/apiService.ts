@@ -14,12 +14,17 @@ async function request<T,>(payload: any): Promise<T> {
             },
             body: JSON.stringify(payload),
             signal: controller.signal,
+            mode: 'cors', // Explicitly set mode for clarity
         });
         
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
+            // If response is not OK, try to get more details from the body
+            const errorText = await response.text();
+            // The error text from Google Apps Script might be HTML, so we show a snippet
+            const errorDetail = errorText.slice(0, 300).trim(); 
+            throw new Error(`伺服器錯誤 (狀態 ${response.status}): ${errorDetail}...`);
         }
         
         const result = await response.json();
@@ -29,10 +34,11 @@ async function request<T,>(payload: any): Promise<T> {
         clearTimeout(timeoutId);
         if (error.name === 'AbortError') {
             console.error('API 請求超時');
-            throw new Error('請求超時，伺服器無回應');
+            throw new Error('請求超時，伺服器無回應。請檢查後端是否運行正常。');
         }
         console.error('API 請求失敗:', error);
-        throw new Error('網路連線失敗，請檢查網路連線和伺服器狀態');
+        // Add more context to the generic network error
+        throw new Error(`網路連線失敗。請檢查手機網路，或可能是後端伺服器設定問題 (CORS 或部署)。錯誤: ${error.message}`);
     }
 }
 
