@@ -1,13 +1,13 @@
 import { MenuItem } from './types';
 
-// Configuration values for the application.
-// In a real-world scenario, these should be stored in environment variables for security.
-export const LIFF_ID = '2008316489-6nMjb0KX';
-export const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxR1gzQgV1jq8DUhYX8EY0EmA6i2PBnjo_IZJUuwRgj7Ggjgro8Mdbnic7ZdhIIc2B1/exec';
+// 從 Vercel 等託管平台提供的環境變數讀取設定。
+// 變數名稱必須以 NEXT_PUBLIC_ 開頭，Vercel 的建置系統才會將其暴露給瀏覽器端。
+export const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID;
+export const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
 if (!LIFF_ID || !API_ENDPOINT) {
-    // This check remains as a safeguard.
-    console.error("LIFF_ID and API_ENDPOINT are not set. The application will not function correctly.");
+    // 這個檢查會提醒開發者，如果環境變數未設定，應用程式將無法正常運作。
+    console.error("NEXT_PUBLIC_LIFF_ID and NEXT_PUBLIC_API_ENDPOINT environment variables are not set. The application will not function correctly.");
 }
 
 export const DELIVERY_FEE = 30;
