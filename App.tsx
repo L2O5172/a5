@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, NotificationState, MenuItem, OrderData, SubmittedOrderData } from './types';
 import * as apiService from './services/apiService';
@@ -8,6 +7,11 @@ import { HistoryPage } from './components/HistoryPage';
 import { SuccessPage } from './components/SuccessPage';
 import { Notification } from './components/Notification';
 import { LoadingSpinner } from './components/LoadingSpinner';
+
+// 簡單的輸入清理函式，移除 HTML 標籤
+const sanitizeInput = (input: string): string => {
+    return input.replace(/<[^>]*>?/gm, '');
+};
 
 export const App: React.FC = () => {
     const [view, setView] = useState<View>('order');
@@ -38,11 +42,19 @@ export const App: React.FC = () => {
 
     const handleSubmitOrder = async (orderData: OrderData, idToken: string | null) => {
         try {
-            const result = await apiService.submitOrder(orderData, idToken);
+            // 在提交前清理所有文字輸入
+            const sanitizedOrderData: OrderData = {
+                ...orderData,
+                customerName: sanitizeInput(orderData.customerName),
+                deliveryAddress: sanitizeInput(orderData.deliveryAddress),
+                notes: sanitizeInput(orderData.notes),
+            };
+
+            const result = await apiService.submitOrder(sanitizedOrderData, idToken);
             const finalOrderData: SubmittedOrderData = { 
-                ...orderData, 
+                ...sanitizedOrderData, 
                 orderId: result.data?.orderId || 'TEST_' + Date.now(), 
-                totalAmount: result.data?.totalAmount || orderData.items.reduce((sum, item) => sum + item.price * item.quantity, 0) + (orderData.deliveryAddress ? DELIVERY_FEE : 0)
+                totalAmount: result.data?.totalAmount || sanitizedOrderData.items.reduce((sum, item) => sum + item.price * item.quantity, 0) + (sanitizedOrderData.deliveryAddress ? DELIVERY_FEE : 0)
             };
             setSubmittedOrder(finalOrderData);
             setView('success');
