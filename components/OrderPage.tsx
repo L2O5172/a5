@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLiff } from '../hooks/useLiff';
 import { MenuItem as MenuItemType, CartItem, OrderData } from '../types';
@@ -24,6 +23,7 @@ export const OrderPage: React.FC<OrderPageProps> = ({ menuItems, onSubmitOrder, 
     const [pickupTime, setPickupTime] = useState('');
     const [deliveryAddress, setDeliveryAddress] = useState('');
     const [notes, setNotes] = useState('');
+    const [nameError, setNameError] = useState('');
     const [phoneError, setPhoneError] = useState('');
     const [timeError, setTimeError] = useState('');
 
@@ -122,11 +122,12 @@ export const OrderPage: React.FC<OrderPageProps> = ({ menuItems, onSubmitOrder, 
 
     const validateForm = () => {
         let isValid = true;
+        setNameError('');
         setPhoneError('');
         setTimeError('');
 
         if (!customerName.trim()) {
-            showNotification('請輸入顧客姓名', 'error');
+            setNameError('請輸入顧客姓名');
             isValid = false;
         }
 
@@ -203,8 +204,9 @@ export const OrderPage: React.FC<OrderPageProps> = ({ menuItems, onSubmitOrder, 
                         value={customerName} 
                         onChange={(e) => setCustomerName(e.target.value)} 
                         placeholder={profile ? "自動帶入 LINE 名稱" : "請輸入您的姓名"}
-                        className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500"
+                        className={`w-full p-3 border rounded-lg text-sm focus:ring-green-500 focus:border-green-500 ${nameError ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
                 </div>
                 
                 <div>
